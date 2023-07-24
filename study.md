@@ -1,4 +1,6 @@
-# Node.js 시작하기
+# Node.js 알아야될 것들
+
+**Part1**
 
 1. **라이브러리를 설치하기 전에 npm 초기화**
     ```
@@ -68,3 +70,36 @@
 
 10. **API와 REST API**
     API(Application Programming Interface)는 웹 서버와 클라이언트 간의 요청 방식을 정의하는 것을 의미합니다. REST API는 이러한 API를 REST 원칙에 따라 설계한 것을 의미합니다. REST 원칙에는 6개의 원칙이 있습니다.
+
+
+
+**Part2**
+MongoDB를 연결하는 방법은 다음과 같습니다:
+
+```javascript
+MongoClient.connect('mongodb+srv://admin:<UrPW>@cluster0.cnufat6.mongodb.net/?retryWrites=true&w=majority',{ useUnifiedTopology: true }, function(error, client){
+    if (error) return console.log(error)
+    
+    app.listen(8080, function(){
+        console.log('listening on 8080')
+    });
+});
+```
+이것이 DB를 연결하는 법입니다.
+
+위의 코드 중간에 아래와 같이 코드를 추가하면 데이터를 저장할 수 있습니다. 꼭 중간에 넣을 필요는 없습니다. MongoDB에 연결만 되어 있다면 어느 곳에서든 선언할 수 있습니다.
+
+```javascript
+db = client.db('todoapp');
+db.collection('post').insertOne({data: 'saveData'}, function(error, res){
+    console.log('success save');
+});
+```
+기본 키를 직접 입력해주는 경우에는 아래와 같이 선언하면 됩니다:
+
+```javascript
+db = client.db('todoapp');
+db.collection('post').insertOne({_id:1,data: 'saveData'}, function(error, res){
+    console.log('success save');
+});
+```
