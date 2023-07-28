@@ -81,4 +81,23 @@ app.get('/list', function(req, res){
     });
 });
 
-//Part2 AJAX로 삭제 요청하기1
+
+app.delete('/delete',function(req,res){
+    console.log(req.body)
+    req.body._id = parseInt(req.body._id)
+    db.collection('post').deleteOne(req.body, function(err,ret){
+        console.log('삭제완료');
+        res.status(200).send({ message : '성공했습니다.' });
+    })
+
+});
+
+app.get('/detail/:id', function(req, res){
+    db.collection('post').findOne({_id : parseInt(req.params.id)}, function(err, ret){
+        if (err) return console.log(err)
+        console.log(ret);
+        res.render('detail.ejs', { data : ret});
+    })
+})
+
+//Part2 마지막 쉬어가기 부터 듣기

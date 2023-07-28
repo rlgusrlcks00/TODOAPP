@@ -220,3 +220,84 @@ DELETE 요청을 보내는 두 가지 방법:
 2. AJAX 사용
 
 AJAX는 서버와 클라이언트 간의 비동기 통신을 가능하게 해주는 JavaScript 문법입니다.
+
+
+AJAX의 장점은 새로고침 없이 서버에 요청하는 것을 도와주는 것입니다. 이를 통해 웹 페이지의 일부분만 업데이트하여 사용자 경험을 향상시킬 수 있습니다.
+
+먼저, AJAX를 사용하기 위해서는 jQuery를 포함시켜야 합니다. jQuery는 브라우저에서 JavaScript 코드를 간편하게 작성하고 DOM 조작 및 AJAX 요청을 보다 쉽게 처리할 수 있게 도와주는 라이브러리입니다.
+
+```html
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+```
+
+AJAX를 간단하게 사용하려면 위와 같이 jQuery를 로드해야 합니다. 이후 아래와 같이 `$.ajax()` 함수를 호출하여 AJAX 요청을 보낼 수 있습니다.
+
+```html
+<script>
+  $.ajax({
+    // AJAX 요청을 보내는 코드
+  });
+</script>
+```
+
+AJAX의 기본 문법은 다음과 같습니다.
+
+```html
+<script>
+  $.ajax({
+    method: 'DELETE', // 요청 방식 (GET, POST, PUT, DELETE 등)
+    url: '경로', // 요청을 보낼 서버의 주소
+    data: '요청과 함께 보낼 데이터', // 서버에 전달할 데이터 (옵션이므로 필요에 따라 사용)
+  });
+</script>
+```
+
+서버 측에서는 AJAX 요청을 받아서 처리하는 부분을 작성해야 합니다. 예를 들어, 삭제 기능을 구현하기 위해 다음과 같이 `app.delete()` 메서드를 사용합니다. 그리고 `res.body`로 받아오는 데이터가 문자열이므로 숫자로 변환해야 합니다.
+
+```javascript
+app.delete('/delete', function (req, res) {
+  req.body._id = parseInt(req.body._id);
+  db.collection('post').deleteOne(req.body, function (err, ret) {
+    console.log('삭제완료');
+  });
+});
+```
+
+클라이언트 측에서는 삭제 버튼 클릭 시 AJAX를 통해 서버로 삭제 요청을 보내고, 성공적으로 처리된 경우 해당 글의 div 태그를 서서히 안보이게(fadeOut) 할 수 있습니다.
+
+```html
+<script>
+  $(document).ready(function () {
+    $('.delete').click(function (e) {
+      e.preventDefault();
+      var postNum = $(this).data('id');
+      var pushedBTN = $(this);
+      $.ajax({
+        method: 'DELETE',
+        url: '/delete',
+        data: { _id: postNum }
+      }).done(function (ret) {
+        console.log('성공했습니다.');
+        pushedBTN.parent('div').fadeOut();
+      }).fail(function(xhr, textStatus, errorThrown){
+        console.log('실패하셨습니다.');
+        console.log(xhr, textStatus, errorThrown);
+      });
+    });
+  });
+</script>
+```
+
+또한, 상세 페이지는 여러개를 준비하는 것이 아니라 하나의 상세 페이지에서 데이터베이스로 관리합니다. 이를 위해 URL의 파라미터를 사용하여 해당 글의 정보를 동적으로 가져옵니다.
+
+```javascript
+app.get('/detail/:id', function(req, res){
+    db.collection('post').findOne({_id : parseInt(req.params.id)}, function(err, ret){
+        if (err) return console.log(err)
+        console.log(ret);
+        res.render('detail.ejs', { data : ret});
+    })
+})
+```
+
+이렇게 하면 해당 글의 정보를 상세 페이지에 보여주며, 동적인 페이지를 구현할 수 있습니다.
