@@ -39,18 +39,19 @@ app.get('/beauty', function(req,res){
 });
 
 app.get('/', function(req,res){
-    res.sendFile(__dirname + '/index.html')
+    res.render('index.ejs');
+    // res.sendFile(__dirname + '/index.html')
 });
 
 app.get('/write',function(req,res){
-    res.sendFile(__dirname + '/write.html')
+    res.render('write.ejs');
+    // res.sendFile(__dirname + '/write.html')
 });
 
 app.get('/write1',(req,res) => {res.sendFile(__dirname + '/write.html')});
 //신문법, 실무에서는 이렇게 쓰지 않을까?
 
 app.post('/add', function(req,res){
-    res.send('전송완료')
     db.collection('counter').findOne({name : 'countPost'}, function(err,ret){
         console.log(ret.totalPost);
         var TotalPost = ret.totalPost;
@@ -60,9 +61,11 @@ app.post('/add', function(req,res){
 
             db.collection('counter').updateOne({name : 'countPost'},{ $inc : {totalPost : 1} },function(error,ret){
                 if(error){return console.log(error)};
+                res.render('sendcheck.ejs');
             });
             if(error){return console.log(error)};
         });
+
     });
 
     console.log(req.body.todo)
@@ -100,4 +103,22 @@ app.get('/detail/:id', function(req, res){
     })
 })
 
-//Part2 마지막 쉬어가기 부터 듣기
+
+app.get('/update/:id', function(req, res){
+    db.collection('post').findOne({_id : parseInt(req.params.id)}, function(err, ret){
+        if (err) return console.log(err)
+        console.log(ret)
+        res.render('update.ejs', { data: ret }); // 'data' 객체를 템플릿으로 전달
+    })
+})
+
+app.post('/update/:id/set', function(req, res){
+    db.collection('post').updateOne({ _id : parseInt(req.params.id) }, { $set : { todo : req.body.todo , date : req.body.date} },function(err, ret){
+        console.log(err);
+        db.collection('post').find().toArray(function(error, rest){
+    
+            console.log(ret);
+            res.render('list.ejs', {posts: rest});
+        });
+    });
+});
