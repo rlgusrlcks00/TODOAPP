@@ -9,14 +9,20 @@
 
     <title>Hello, world!</title>
   </head>
+  <style>
+    .input-group {
+      width: 60%;
+      margin: 0 auto; /* auto margin on left and right */
+    }
+    </style>
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">오늘도 TODO</a>
+        <a class="navbar-brand" href="../">오늘도 TODO</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav">
+          <ul class="navbar-nav mr-auto">
             <li class="nav-item">
               <a class="nav-link" href="../">Home <span class="sr-only">(current)</span></a>
             </li>
@@ -30,6 +36,10 @@
                 <a class="nav-link" href="#">Detail</a>
               </li> -->
           </ul>
+          <div class="form-inline my-2 my-lg-0">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Login</button>
+            <button class="btn btn-outline-success my-2 my-sm-0 ml-2" type="submit">Sign up</button>
+          </div>
         </div>
       </nav>
 
@@ -47,6 +57,12 @@
         </div>
       </div>
       </div>
+
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="댓글을 입력하세요." aria-label="Recipient's username" aria-describedby="button-addon2">
+        <button class="btn btn-outline-secondary" type="button" id="button-addon2">Button</button>
+      </div>
+      
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
