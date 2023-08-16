@@ -128,14 +128,20 @@ app.get('/join', function(req,res){
     res.render('join.ejs');
 });
 
+app.get('/login', function(req,res){
+    console.log(res);
+    res.render('login.ejs');
+});
+
+
 app.post('/welcome',function(req,res){
     db.collection('userCounter').findOne({name : 'countUser'}, function(err,ret){
         console.log(ret.totalUser);
         var TotalUser = ret.totalUser;
 
-        db.collection('user').insertOne({id : TotalUser, Username: req.body.Username, Email: req.body.email, Password: req.body.password}, function(error,ret){
+        db.collection('user').insertOne({_id : TotalUser, Username: req.body.Username, Email: req.body.email, Password: req.body.password}, function(error,ret){
             console.log('insert User');
-            db.collection('userCount').updateOne({name: 'countUser'}, {$inc:{totalUser : 1}}, function(error,ret){
+            db.collection('userCounter').updateOne({name: 'countUser'}, {$inc:{totalUser : 1}}, function(error,ret){
                 if(error){return console.log(error)};
                 console.log(ret)
                 res.render('joincheck.ejs');
@@ -144,6 +150,7 @@ app.post('/welcome',function(req,res){
         });
     });
     console.log(req.body);
-
 });
+
+
 
