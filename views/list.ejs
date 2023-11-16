@@ -18,7 +18,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-              <a class="nav-link" href="../">Home <span class="sr-only">(current)</span></a>
+              <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="../write">Write</a>
@@ -30,10 +30,17 @@
               <a class="nav-link" href="#">Detail</a>
             </li> -->
           </ul>
-          <div class="form-inline my-2 my-lg-0">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Login</button>
-            <button class="btn btn-outline-success my-2 my-sm-0 ml-2" type="submit">Sign up</button>
-          </div>
+          <% if (userID){ %>
+            <div class="form-inline my-2 my-lg-0">
+              <a class="btn btn-outline-success my-2 my-sm-0" type="submit" href = "logout">Logout</a>
+
+            </div>
+          <% } else { %>
+            <div class="form-inline my-2 my-lg-0">
+              <a class="btn btn-outline-success my-2 my-sm-0" type="submit" href="login">Login</a>
+              <a class="btn btn-outline-success my-2 my-sm-0 ml-2" type="submit" href="join">Sign up</a>
+            </div> 
+          <% } %> 
         </div>
       </nav>
 
@@ -44,6 +51,7 @@
           <p class="lead">할일: <%= posts[i].todo %></p>
           <hr class="my-4">
           <p>할일 마감 날짜: <%= posts[i].date %></p>
+          <p>작성자: <%= posts[i].person %></p>
           <button type="button" class="btn btn-outline-primary delete"data-id="<%= posts[i]._id %>">삭제</button>
           <a type="button" class="btn btn-outline-primary update"data-id="<%= posts[i]._id %>" href="../update/<%= posts[i]._id %>">수정</a>
         </div>

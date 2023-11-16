@@ -301,3 +301,131 @@ app.get('/detail/:id', function(req, res){
 ```
 
 이렇게 하면 해당 글의 정보를 상세 페이지에 보여주며, 동적인 페이지를 구현할 수 있습니다.
+
+
+
+```markdown
+# 세션 기반 로그인 기능 구현하기
+
+## 필요한 라이브러리 설치하기
+다음 명령어로 필요한 라이브러리를 설치합니다:
+
+```bash
+npm install passport passport-local express-session
+```
+
+## 서버 설정
+
+`server.js` 파일 상단에 설치한 라이브러리를 require합니다.
+
+```javascript
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const session = require('express-session');
+
+app.use(session({ secret : '비밀코드', resave : true, saveUninitialized : false }));
+app.use(passport.initialize());
+app.use(passport.session());
+```
+
+## 로그인 라우트 설정
+
+로그인 요청을 처리하는 라우트를 설정합니다.
+
+```javascript
+app.post('/login', passport.authenticate('local', { 
+  failureRedirect : '/fail'
+}), function(req, res){
+  res.redirect('/');
+});
+```
+
+이 코드는 `passport` 라이브러리가 제공하는 아이디와 비밀번호 인증을 도와주는 미들웨어입니다.
+
+## 인증 전략 설정
+
+`passport`를 사용한 로컬 인증 전략을 설정합니다.
+
+```javascript
+passport.use(new LocalStrategy({
+  usernameField: 'id',
+  passwordField: 'pw',
+  session: true,
+  passReqToCallback: false,
+}, function (입력한아이디, 입력한비번, done) {
+  db.collection('user').findOne({ Email: 입력한아이디 }, function (에러, 결과) {
+    if (에러) return done(에러);
+    if (!결과) return done(null, false, { message: '존재하지 않는 아이디요' });
+    if (입력한비번 == 결과.Password) {
+      return done(null, 결과);
+    } else {
+      return done(null, false, { message: '비번틀렸어요' });
+    }
+  })
+}));
+```
+
+## 세션 관리
+
+`passport`를 사용하여 세션 관리를 설정합니다.
+
+```javascript
+passport.serializeUser(function(user, done) {
+  done(null, user._id);
+});
+```
+
+이 코드는 유저의 ID 데이터를 바탕으로 세션 데이터를 만들고 그 세션 데이터의 ID를 쿠키로 만들어 사용자의 브라우저로 보냅니다.
+
+```javascript
+passport.deserializeUser(function(id, done) {
+  db.collection('user').findOne({ _id: id }, function (err, user) {
+    done(err, user);
+  });
+});
+```
+
+`deserializeUser` 함수는 세션 ID를 바탕으로 DB에서 유저 정보를 찾습니다.
+
+## 로그인 확인 미들웨어
+
+로그인 여부를 확인하는 미들웨어를 설정합니다.
+
+```javascript
+function logincheck(req, res, next){
+    if(req.user){
+        next();
+    } else {
+        res.send('로그인이 필요합니다');
+    }
+}
+
+app.get('/mypage', logincheck, function(req, res) {
+    res.render('mypage.ejs', { userID : req.user })
+});
+```
+
+## 환경변수 설정
+
+보안을 위해 중요한 정보는 환경변수 파일 `.env`에 저장합니다.
+
+1. 환경변수 사용을 위한 라이브러리를 설치합니다:
+
+```bash
+npm install dotenv
+```
+
+2. `server.js` 파일 상단에 환경변수 라이브러리를 등록합니다:
+
+```javascript
+require('dotenv').config()
+```
+
+3. `.env` 파일을 생성하고 필요한 값을 저장합니다.
+
+4. 환경변수 값을 불러올 때는 `process.env.변수명`을 사용합니다.
+
+이제 설정한 환경변수를 사용하여 서버를 구성하고 로그인 기능을 구현할 수 있습니다.
+```
+
+위의 마크다운 형식의 문서는 GitHub에 올릴 수 있으며, 필요한 내용을 담고 있습니다. `.md` 파일로 저장하여 프로젝트의 루트 디렉토리에 포함시키면 됩니다.
