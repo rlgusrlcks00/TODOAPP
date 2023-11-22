@@ -13,12 +13,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 require('dotenv').config();
-// MongoClient.connect('mongodb+srv://admin:gg0069759@cluster0.cnufat6.mongodb.net/?retryWrites=true&w=majority',function(error, client){
-//     app.listen(8080, function(){
-//         console.log('success connect DB')
-//     });
 
-// });
 MongoClient.connect(process.env.DB_URL,{ useUnifiedTopology: true }, function(error, client){
     if (error) return console.log(error)
     
@@ -222,8 +217,17 @@ app.get('/login', function(req,res){
 //로그인 기능 실패
 
 app.get('/mypage', logincheck, function(req, res) {
+    const user_ID = req.user._id;
+    db.collection('post').find({userID : user_ID}).toArray(function(err, posts){
+        if(err){
+            console.error(err);
+            res.render('글을 불러오는데 에러');
+        } else {
+            res.render('mypage.ejs', { userID : req.user, posts: posts});
+
+        }
+    });
     console.log(req.user);
-    res.render('mypage.ejs', { userID : req.user})
 });
 
 function logincheck(req, res, next){
@@ -237,14 +241,23 @@ function logincheck(req, res, next){
 
 function loginmain(req, res, next){
     if(req.user){
-       res.render('mypage.ejs', { userID : req.user}) 
+        const user_ID = req.user._id;
+        db.collection('post').find({userID : user_ID}).toArray(function(err, posts){
+            if(err){
+                console.error(err);
+                res.render('글을 불러오는데 에러');
+            } else {
+                res.render('mypage.ejs', { userID : req.user, posts: posts});
+    
+            }
+        });
     }
     else{
         next()
     }
 }
 
-//마이페이지에서 로그인 한 유저가 작성한 글들을 모아둔 인터페이스 개발하기
+//마이페이지에서 로그인 한 유저가 작성한 글들을 모아둔 인터페이스 개발하기-완료
 //검색기능 만들기
 //이미지 업로드
 //유저간 채팅 기능
